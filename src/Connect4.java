@@ -28,13 +28,13 @@ public class Connect4{
         }
 
         board = new GameBoard();
+        board.display();
         while(!board.isConcluded()){
             Player nextPlayer = players.remove();
             nextPlayer.play(board);
+            board.display();
             players.add(nextPlayer);
         }
         input.close();
-
-        board.display();
     }
 }

@@ -3,15 +3,13 @@ import java.util.Scanner;
 public class HumanPlayer extends Player{
 
     private Scanner input;
-    private final char tag = 'H';
+    public static final char tag = 'H';
 
     public HumanPlayer(){
         input = new Scanner(System.in);
     }
 
     public void play(GameBoard board){
-
-        board.display();
 
         char decision;
 
