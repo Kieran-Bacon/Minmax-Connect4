@@ -1,6 +1,8 @@
 public class GameBoard{
 
-    public static final char[] COLUMNS = {"A","B","C","D","E","F","G"};
+    public static final int WIDTH = 7;
+    public static final int HEIGHT = 6;
+    public static final char[] COLUMNS = {'A','B','C','D','E','F','G'};
 
     protected GameState state;
     protected int[] columnSizes;
@@ -12,13 +14,15 @@ public class GameBoard{
         positions = new char[7][6];
     }
 
+    public GameState state(){return state;}
+    public char element(int x, int y){return positions[x][y];}
+
     public Boolean isValidMove(char decision){
 
-        int columnID = GameBoard.charToColumn(decision);
+        if(isConcluded()) return false; // The game is over therefore no valid moves
 
-        if( columnID >= 0 & columnID < 7 & columnSizes[columnID] < 5){
-            return true;
-        }
+        int columnID = charToColumn(decision);
+        if( columnID >= 0 && columnID < 7 && columnSizes[columnID] < 6) return true;
         return false;
     }
 
@@ -31,9 +35,9 @@ public class GameBoard{
 
         if(this.isConcluded()){
             System.out.println("***GAME OVER!***");
-            if(this.state == GameState.HUMAN) System.out.println("Congratulations on the win!");
-            if(this.state == GameState.COMPUTER) System.out.println("Bested but not beat!");
-            if(this.state == GameState.DRAW) System.out.println("Honourable end!");
+            if(this.state == GameState.HUMAN) System.out.println("Player wins!!! Congratulations on the win!");
+            if(this.state == GameState.COMPUTER) System.out.println("Computer wins :( Bested but not beat!");
+            if(this.state == GameState.DRAW) System.out.println("Drawn game, Honourable end!");
         }
 
         for( int y = 0; y < 6; y++){
@@ -49,24 +53,24 @@ public class GameBoard{
     public void makeMove(char playerTag, char decision){
 
         if(this.isValidMove(decision)){
-            int cid = GameBoard.charToColumn(decision);
+            int cid = charToColumn(decision);
             positions[cid][columnSizes[cid]] = playerTag;
             columnSizes[cid]++;
 
-            this.updateState();
+            updateState();
         } else {
             throw new Error("Tried to make an illegal move|" + playerTag + "|" + decision);
         }
     }
 
-    private void updateState(){
+    protected void updateState(){
         
         // Horizontal wins
-        for(int y=0;y<6;y++){
-            for(int x=0;x<4; x++){
+        for(int x=0;x<4;x++){
+            for(int y=0;y<6; y++){
                 if((positions[x][y] == positions[x+1][y]) &
-                   (positions[x+1][y] == positions[x+2][y]) &
-                   (positions[x+2][y] == positions[x+3][y]))
+                   (positions[x][y] == positions[x+2][y]) &
+                   (positions[x][y] == positions[x+3][y]))
                 {
                     if(positions[x][y] == 'H'){state = GameState.HUMAN; return;}
                     if(positions[x][y] == 'C'){state = GameState.COMPUTER; return;}
@@ -78,8 +82,8 @@ public class GameBoard{
         for(int x=0;x<7;x++){
             for(int y=0;y<3;y++){
                 if((positions[x][y] == positions[x][y+1]) &
-                    (positions[x][y+1] == positions[x][y+2]) &
-                    (positions[x][y+2] == positions[x][y+3]))
+                   (positions[x][y] == positions[x][y+2]) &
+                   (positions[x][y] == positions[x][y+3]))
                 {
                     if(positions[x][y] == 'H'){state = GameState.HUMAN;return;}
                     if(positions[x][y] == 'C'){state = GameState.COMPUTER;return;}
@@ -91,8 +95,8 @@ public class GameBoard{
         for(int x=0;x<4;x++){
             for(int y=0;y<3;y++){
                 if((positions[x][y] == positions[x+1][y+1]) &
-                    (positions[x+1][y+1] == positions[x+2][y+2]) &
-                    (positions[x+2][y+2] == positions[x+3][y+3]))
+                   (positions[x][y] == positions[x+2][y+2]) &
+                   (positions[x][y] == positions[x+3][y+3]))
                 {
                     if(positions[x][y] == 'H'){state = GameState.HUMAN;return;}
                     if(positions[x][y] == 'C'){state = GameState.COMPUTER;return;}
@@ -101,11 +105,11 @@ public class GameBoard{
         }
 
         // Diagonal \ wins
-        for(int x=6;x>2;x--){
+        for(int x=0;x<4;x++){
             for(int y=5;y>2; y--){
-                if((positions[x][y] == positions[x-1][y-1]) &
-                   (positions[x-1][y-2] == positions[x-2][y-2]) &
-                   (positions[x-2][y-2] == positions[x-3][y-3]))
+                if((positions[x][y] == positions[x+1][y-1]) &
+                   (positions[x][y] == positions[x+2][y-2]) &
+                   (positions[x][y] == positions[x+3][y-3]))
                 {
                     if(positions[x][y] == 'H'){state = GameState.HUMAN;return;}
                     if(positions[x][y] == 'C'){state = GameState.COMPUTER;return;}
@@ -121,7 +125,7 @@ public class GameBoard{
         if(count==35) state = GameState.DRAW;
     }
 
-    private static int charToColumn(char c){
+    protected static int charToColumn(char c){
         return (int) c - 65;
     }
 
